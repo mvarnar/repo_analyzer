@@ -1,9 +1,9 @@
-import urllib.request
-import json
 from dataclasses import dataclass
 from collections import Counter
 from datetime import datetime
 from typing import Optional, List, Dict, Any, Tuple
+
+from github_api import GithubApiWrapper
 
 
 @dataclass
@@ -22,13 +22,11 @@ class Issue:
     pass
 
 
-def extract_commit_stats(owner: str,
-                         repo: str,
+def extract_commit_stats(api_commits: List[Dict[Any, Any]],
                          branch: str,
                          top_n: int,
                          from_datetime: Optional[datetime] = None,
                          to_datetime: Optional[datetime] = None) -> str:
-    api_commits = _get_commits_from_api(owner, repo, branch)
     commits = _build_commits_from_api_commits(api_commits)
     top_n_authors = _get_top_n_authors(commits, top_n, from_datetime, to_datetime)
     return _build_top_n_authors_table(top_n_authors)
@@ -40,14 +38,6 @@ def extract_pr_stats(owner: str, repo: str) -> str:
 
 def extract_issue_stats(owner: str, repo: str) -> str:
     pass
-
-
-def _get_commits_from_api(owner: str, repo: str, branch: str) -> List[Dict[Any, Any]]:
-    url = f'https://api.github.com/repos/{owner}/{repo}/commits?sha={branch}'
-    req = urllib.request.Request(url)
-    with urllib.request.urlopen(req) as response:
-        body = response.read()
-    return json.loads(body)
 
 
 def _build_commits_from_api_commits(api_commits: List[Dict[Any, Any]]) -> List[Commit]:
