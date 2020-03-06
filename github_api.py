@@ -1,10 +1,11 @@
 import urllib.request
 import json
-
-GITHUB_DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+from datetime import datetime
 
 
 class GithubApiWrapper:
+    GITHUB_DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+
     def __init__(self, owner, repo):
         self.owner = owner
         self.repo = repo
@@ -27,3 +28,7 @@ class GithubApiWrapper:
         with urllib.request.urlopen(req) as response:
             body = response.read()
         return json.loads(body)
+
+    @classmethod
+    def convert_from_github_datetime(cls, timestamp):
+        return datetime.strptime(timestamp, cls.GITHUB_DATETIME_FORMAT)

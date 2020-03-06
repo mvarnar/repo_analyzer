@@ -1,12 +1,12 @@
 from datetime import datetime, timedelta
 
 from pql import pql
-from github_api import GITHUB_DATETIME_FORMAT
+from github_api import GithubApiWrapper
 
 
 def in_range_datetime(from_datetime=None, to_datetime=None):
     def _in_range_datetime(timestamp):
-        timestamp = datetime.strptime(timestamp, GITHUB_DATETIME_FORMAT)
+        timestamp = GithubApiWrapper.convert_from_github_datetime(timestamp)
         return ((from_datetime is None or from_datetime <= timestamp)
                 and (to_datetime is None or timestamp <= to_datetime))
     return _in_range_datetime
@@ -76,12 +76,15 @@ def _extract_commit_raw_stats(commits, top_n, from_datetime, to_datetime):
 
 def _build_table(table_name, rows, field_name_mapper):
     table = table_name + '\n'
-    requried_fields = field_name_mapper.keys()
-    collumn_names = [field_name_mapper[row]
-                     for row in rows[0].keys()
-                     if row in requried_fields]
-    table += '\t'.join(collumn_names) + '\n'
-    for row in rows:
-        filtered_row_values = [str(val) for key, val in row.items() if key in requried_fields]
-        table += '\t'.join(filtered_row_values) + '\n'
+    if rows:
+        requried_fields = field_name_mapper.keys()
+        collumn_names = [field_name_mapper[row]
+                         for row in rows[0].keys()
+                         if row in requried_fields]
+        table += '\t'.join(collumn_names) + '\n'
+        for row in rows:
+            filtered_row_values = [str(val) for key, val in row.items() if key in requried_fields]
+            table += '\t'.join(filtered_row_values) + '\n'
+    else:
+        table += '\t'.join(field_name_mapper.values()) + '\n'
     return table
