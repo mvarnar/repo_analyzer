@@ -6,6 +6,7 @@ from stats import (extract_commit_stats,
                    extract_issues_stats,
                    extract_old_issues_stats)
 from github_api import GithubApiWrapper
+from utils import parse_url
 
 TOP_N_COMMITERS = 30
 N_TABLE_SEPARATOR_LEN = 30
@@ -26,7 +27,7 @@ parser.add_argument('--to_datetime',
 args = parser.parse_args()
 
 
-owner, repo = args.repo_url.split('/')[-2:]
+owner, repo = parse_url(args.repo_url)
 branch = args.branch
 from_datetime = GithubApiWrapper.convert_from_github_datetime(
     args.from_datetime) if args.from_datetime else None
