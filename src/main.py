@@ -27,4 +27,4 @@ stats.append(extract_old_issues_stats(api_pulls, from_datetime, to_datetime, 0))
 
 for stat in stats:
     print(stat)
-    print('\n------------------------------\n')
+    print('------------------------------')
