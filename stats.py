@@ -16,7 +16,7 @@ def extract_commit_stats(commits, top_n, from_datetime, to_datetime):
     raw_stats = _extract_commit_raw_stats(commits, top_n, from_datetime, to_datetime)
     return _build_table(f'Top {top_n} commiters',
                         raw_stats,
-                        {'commit|author|name': 'Author', 'len': 'Number of commits'})
+                        {'author|login': 'Author', 'len': 'Number of commits'})
 
 
 def extract_pulls_stats(pulls, from_datetime, to_datetime):
@@ -67,7 +67,7 @@ def _extract_state_like_old_objects_stats(objects, from_datetime, to_datetime, o
 def _extract_commit_raw_stats(commits, top_n, from_datetime, to_datetime):
     pipe = pql.Pipeline([
         pql.Filter('commit->author->date', in_range_datetime(from_datetime, to_datetime)),
-        pql.GroupBy('commit->author->name', len),
+        pql.GroupBy('author->login', len),
         pql.OrderBy('len', reverse=True),
         pql.Limit(top_n)
     ])
