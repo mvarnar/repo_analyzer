@@ -59,14 +59,19 @@ class Filter(BaseStep):
 
 
 class GroupBy(BaseStep):
+    _ALL_SPECIAL_FIELD = 'all'
+
     def __init__(self, field, aggregation_func):
-        self._field = field
+        self._field = field if field is not None else self._ALL_SPECIAL_FIELD
         self._aggregation_func = aggregation_func
 
     def execute(self, objects):
-        groups = defaultdict(list)
-        for obj in objects:
-            groups[obj[self._field]].append(obj)
+        if self._field != self._ALL_SPECIAL_FIELD:
+            groups = defaultdict(list)
+            for obj in objects:
+                groups[obj[self._field]].append(obj)
+        else:
+            groups = {self._field: objects}
 
         aggregated = []
         for group_name, group_objects in groups.items():
