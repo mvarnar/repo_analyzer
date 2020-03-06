@@ -61,9 +61,10 @@ class Filter(BaseStep):
 class GroupBy(BaseStep):
     _ALL_SPECIAL_FIELD = 'all'
 
-    def __init__(self, field, aggregation_func):
+    def __init__(self, field, aggregation_func, default_groups=None):
         self._field = field if field is not None else self._ALL_SPECIAL_FIELD
         self._aggregation_func = aggregation_func
+        self._default_groups = default_groups
 
     def execute(self, objects):
         if self._field != self._ALL_SPECIAL_FIELD:
@@ -74,11 +75,18 @@ class GroupBy(BaseStep):
             groups = {self._field: objects}
 
         aggregated = []
+        aggregation_field_name = self._aggregation_func.__name__
         for group_name, group_objects in groups.items():
-            aggregation_field_name = self._aggregation_func.__name__
             aggregated.append(PQLDict(
                 {self._field: group_name,
                  aggregation_field_name: self._aggregation_func(group_objects)}))
+
+        if self._default_groups:
+            for group_name, group_default_value in self._default_groups.items():
+                if group_name not in groups:
+                    aggregated.append(PQLDict(
+                        {self._field: group_name,
+                         aggregation_field_name: group_default_value}))
 
         return aggregated
 

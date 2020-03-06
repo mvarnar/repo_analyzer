@@ -9,7 +9,7 @@ class TestStats(TestCase):
     @parameterized.expand([
         ('table_name',
          [{'state': 'open', 'len': 1, 'some': 3}, {'state': 'closed', 'len': 1, 'some': 4}],
-         {'state': 'State', 'len': 'Number of issues'},
+         {'state': 'State', 'len': 'Number of issues', 'other': 'Other'},
          ('table_name\n'
           'State\tNumber of issues\n'
           'open\t1\n'

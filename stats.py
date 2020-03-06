@@ -48,7 +48,7 @@ def extract_old_issues_stats(issues, from_datetime, to_datetime, old_border_days
 def _extract_state_like_objects_stats(objects, from_datetime, to_datetime):
     pipe = pql.Pipeline([
         pql.Filter('created_at', in_range_datetime(from_datetime, to_datetime)),
-        pql.GroupBy('state', len),
+        pql.GroupBy('state', len, {'open': 0, 'closed': 0}),
     ])
     return pipe.execute(objects)
 
@@ -59,7 +59,7 @@ def _extract_state_like_old_objects_stats(objects, from_datetime, to_datetime, o
             pql.Filter('created_at', in_range_datetime(from_datetime, to_datetime)),
             pql.Filter('state', lambda state: state == 'open'),
             pql.Filter('created_at', in_range_datetime(None, old_border)),
-            pql.GroupBy(None, len),
+            pql.GroupBy(None, len, {'all': 0}),
         ])
     return pipe.execute(objects)
 

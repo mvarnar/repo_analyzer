@@ -17,11 +17,13 @@ class TestPQL(TestCase):
     @parameterized.expand([
         ('author->first name',
          len,
+         {'masha': 0},
          [{'author|first name': 'max', 'len': 2},
-          {'author|first name': 'vasya', 'len': 3}])
+          {'author|first name': 'vasya', 'len': 3},
+          {'author|first name': 'masha', 'len': 0}])
     ])
-    def test_groupby(self, field, aggregation_func, expected):
-        result = pql.GroupBy(field, aggregation_func).execute(
+    def test_groupby(self, field, aggregation_func, default_groups, expected):
+        result = pql.GroupBy(field, aggregation_func, default_groups).execute(
             self.objects)  # pylint: disable=no-member
         self.assertEqual(result, expected)
 
